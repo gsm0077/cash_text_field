@@ -1,39 +1,29 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# cash_text_field
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+A Flutter widget for entering numbers, automatically formatting them as localized currency values based on the provided locale or system default. This package uses the intl package to handle number and currency formatting.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+## Getting Started 🚀
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+1. Add cash_text_field package to your dependencies in pubspec.yaml.
+   ```yaml
+   dependencies:
+     ...
+     cash_text_field: ^0.0.1
+   ```
+2. Run `flutter pub get` to install the package.
+3. Import the package in your Dart code.
+   ```dart
+   import 'package:cash_text_field/cash_text_field.dart';
+   ```
+4. Use the Widget. Example:
 
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
-```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+   ```dart
+          CashTextField(
+            fieldController: controller,
+            focusNode: focusNodeController,
+            validator: (value) {},
+            enabled: true,
+            // isDark: false,
+            formatLocale: "en_IN",
+          ),
+   ```   

@@ -4,14 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-class CashSymbolField extends StatefulWidget {
-  CashSymbolField(
+class CashTextField extends StatefulWidget {
+  CashTextField(
       {super.key,
       required this.fieldController,
       required this.focusNode,
       required this.validator,
       required this.enabled,
-      required this.isDark,
       this.decoration,
       this.hasFoucs,
       this.noFoucs,
@@ -20,37 +19,36 @@ class CashSymbolField extends StatefulWidget {
       this.onEditingComplete,
       this.onFieldSubmitted});
 
-  TextEditingController fieldController;
-  FocusNode focusNode;
-  Function(String? value) validator;
-  bool enabled;
-  bool isDark;
+  final TextEditingController fieldController;
+  final FocusNode focusNode;
+  final Function(String? value) validator;
+  final bool enabled;
   Function? hasFoucs;
   Function? noFoucs;
   InputDecoration? decoration;
   String? formatLocale;
-
   Function(String? value)? onChanged;
   Function(String? value)? onFieldSubmitted;
   Function? onEditingComplete;
+
   @override
-  State<CashSymbolField> createState() => _CashSymbolFieldState();
+  State<CashTextField> createState() => _CashTextFieldState();
 }
 
-class _CashSymbolFieldState extends State<CashSymbolField> {
+class _CashTextFieldState extends State<CashTextField> {
   final currencyFormatter = NumberFormat("#,##0.00", "en_US");
+  late String localFormat;
+  TextEditingController controller = TextEditingController();
 
   bool hasCurrencySymbolAtFront(String text) {
     return text.startsWith("₹");
   }
 
-  String numToCurrencyFormat(int text, String format) {
+  String numToCurrencyFormat(double text, String format) {
     var currencyFormatter = NumberFormat.simpleCurrency(locale: format);
 
     return currencyFormatter.format(text);
   }
-
-  late String localFormat;
 
   @override
   void initState() {
@@ -63,6 +61,13 @@ class _CashSymbolFieldState extends State<CashSymbolField> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+    widget.fieldController.dispose();
+  }
+
   void initializer() {
     String localeString = Intl.getCurrentLocale();
     setState(() {
@@ -72,11 +77,10 @@ class _CashSymbolFieldState extends State<CashSymbolField> {
       if (widget.fieldController.text.isNotEmpty) {
         final value = cleaninputCurrency(widget.fieldController.text);
         final formattedValue = numToCurrencyFormat(value, localFormat);
-        widget.fieldController.text = formattedValue;
+        controller.text = formattedValue;
       }
     } catch (e) {
-      print(79);
-      print("error at the initial value");
+      // controller.text = "";
     }
   }
 
@@ -97,10 +101,10 @@ class _CashSymbolFieldState extends State<CashSymbolField> {
     }
   }
 
-  int cleaninputCurrency(String input) {
+  double cleaninputCurrency(String input) {
     try {
-      final cleanedInput = input.replaceAll(RegExp(r'[^\d.,]'), '');
-      final value = int.parse(cleanedInput);
+      final cleanedInput = input.replaceAll(RegExp(r'[^\d.]'), '');
+      final value = double.parse(cleanedInput);
       return value;
     } catch (e) {
       return 0;
@@ -109,12 +113,10 @@ class _CashSymbolFieldState extends State<CashSymbolField> {
 
   void triggerMethod() {
     if (widget.focusNode.hasFocus == false) {
-      if (widget.fieldController.text.isNotEmpty) {
-        final value = cleaninputCurrency(widget.fieldController.text);
+      if (controller.text.isNotEmpty) {
+        final value = cleaninputCurrency(controller.text);
         final formattedValue = numToCurrencyFormat(value, localFormat);
-        widget.fieldController.text = formattedValue;
-      } else {
-        print("Empty");
+        controller.text = formattedValue;
       }
       widget.noFoucs != null ? widget.noFoucs!() : () {};
     } else {
@@ -127,7 +129,7 @@ class _CashSymbolFieldState extends State<CashSymbolField> {
     return TextFormField(
       enabled: widget.enabled,
       focusNode: widget.focusNode,
-      controller: widget.fieldController,
+      controller: controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
@@ -135,6 +137,7 @@ class _CashSymbolFieldState extends State<CashSymbolField> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: widget.decoration,
       onChanged: (value) {
+        widget.fieldController.text = value;
         widget.onChanged != null ? widget.onChanged!(value) : () {};
       },
       onFieldSubmitted: (value) {

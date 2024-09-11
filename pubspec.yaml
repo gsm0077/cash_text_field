@@ -1,7 +1,8 @@
 name: cash_text_field
 description: "A text field in which you can have cash symbol in front"
 version: 0.0.1
-homepage:
+homepage: https://github.com/gsm0077/cash_text_field
+repository: https://github.com/gsm0077/cash_text_field
 
 environment:
   sdk: ^3.5.0
